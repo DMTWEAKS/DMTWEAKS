@@ -59,11 +59,36 @@ export async function assignKeysToOrder(
     }
   }
 
+  const unlimitedKey = await sql`
+    SELECT id, key_value 
+    FROM product_keys 
+    WHERE product_id = ${product_id} 
+      AND unlimited = TRUE
+    LIMIT 1
+  `
+
+  const unlimitedKeyArray = Array.isArray(unlimitedKey) ? unlimitedKey : []
+  
+  if (unlimitedKeyArray.length > 0 && unlimitedKeyArray[0]) {
+    const firstKey = unlimitedKeyArray[0] as { key_value: string }
+    const unlimitedKeyValue = firstKey.key_value
+    const keyValues = Array(quantity).fill(unlimitedKeyValue)
+    
+    return {
+      success: true,
+      data: {
+        keys: keyValues,
+        count: keyValues.length,
+      },
+    }
+  }
+
   const availableKeys = await sql`
     SELECT id, key_value 
     FROM product_keys 
     WHERE product_id = ${product_id} 
       AND is_used = FALSE 
+      AND (unlimited = FALSE OR unlimited IS NULL)
     LIMIT ${quantity}
   `
 

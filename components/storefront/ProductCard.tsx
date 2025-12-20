@@ -116,10 +116,12 @@ function ProductCard({ product, priority = false }: ProductCardProps) {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Badge
-                    variant={product.stock > 0 ? "default" : "destructive"}
+                    variant={product.stock === null || product.stock > 0 ? "default" : "destructive"}
                     className="bg-background/90 backdrop-blur-sm text-foreground font-semibold shadow-lg border border-border/50 cursor-default"
                   >
-                    {product.stock > 0
+                    {product.stock === null
+                      ? "Unlimited"
+                      : product.stock > 0
                       ? `${product.stock} in stock`
                       : "Out of stock"}
                   </Badge>
@@ -181,7 +183,7 @@ function ProductCard({ product, priority = false }: ProductCardProps) {
           className="flex gap-3 pt-0 px-6 pb-6 relative z-10"
           onClick={(e) => e.stopPropagation()}
         >
-          {product.stock !== undefined && product.stock === 0 ? (
+          {product.stock !== undefined && product.stock !== null && product.stock === 0 ? (
             <Button
               disabled
               className="w-full bg-muted/50 text-muted-foreground font-semibold cursor-not-allowed border border-border/50"

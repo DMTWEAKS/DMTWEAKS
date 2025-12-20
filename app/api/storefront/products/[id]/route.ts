@@ -33,18 +33,33 @@ export async function GET(
 
     const data = await response.json();
     
-    let stock = 0
+    let stock: number | null = 0
     try {
-      const stockData = await sql`
-        SELECT COUNT(*) FILTER (WHERE is_used = FALSE) as available_stock
+      const unlimitedCheck = await sql`
+        SELECT COUNT(*) as count
         FROM product_keys
-        WHERE product_id = ${id}
+        WHERE product_id = ${id} AND unlimited = TRUE
+        LIMIT 1
       `
-      const stockDataArray = Array.isArray(stockData) ? stockData : []
-      const firstStockData = stockDataArray.length > 0 ? stockDataArray[0] : null
-      stock = firstStockData && typeof firstStockData === 'object' && 'available_stock' in firstStockData
-        ? Number((firstStockData as { available_stock: any }).available_stock)
-        : 0
+      const unlimitedCheckArray = Array.isArray(unlimitedCheck) ? unlimitedCheck : []
+      const hasUnlimited = unlimitedCheckArray.length > 0 && 
+        unlimitedCheckArray[0] && 
+        Number((unlimitedCheckArray[0] as { count: any }).count) > 0
+
+      if (hasUnlimited) {
+        stock = null
+      } else {
+        const stockData = await sql`
+          SELECT COUNT(*) FILTER (WHERE is_used = FALSE AND (unlimited = FALSE OR unlimited IS NULL)) as available_stock
+          FROM product_keys
+          WHERE product_id = ${id}
+        `
+        const stockDataArray = Array.isArray(stockData) ? stockData : []
+        const firstStockData = stockDataArray.length > 0 ? stockDataArray[0] : null
+        stock = firstStockData && typeof firstStockData === 'object' && 'available_stock' in firstStockData
+          ? Number((firstStockData as { available_stock: any }).available_stock)
+          : 0
+      }
     } catch (error) {
     }
     

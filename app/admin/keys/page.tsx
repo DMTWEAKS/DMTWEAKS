@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { Upload, FileText, Trash2, CheckCircle2, XCircle } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface Product {
   id: string
@@ -21,6 +23,7 @@ interface Key {
   product_id: string
   key_value: string
   is_used: boolean
+  unlimited?: boolean
   order_id?: string
   customer_email?: string
   used_at?: string
@@ -32,6 +35,7 @@ interface Stock {
   available_stock: number
   used_stock: number
   total_stock: number
+  has_unlimited?: boolean
 }
 
 export default function KeysPage() {
@@ -44,6 +48,7 @@ export default function KeysPage() {
   const [uploading, setUploading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [loadingProducts, setLoadingProducts] = useState(true)
+  const [unlimitedStock, setUnlimitedStock] = useState(false)
 
   useEffect(() => {
     fetchProducts()
@@ -55,6 +60,7 @@ export default function KeysPage() {
       fetchKeys(selectedProduct)
     } else {
       fetchKeys()
+      setUnlimitedStock(false)
     }
   }, [selectedProduct])
 
@@ -116,6 +122,7 @@ export default function KeysPage() {
           product_id: selectedProduct,
           keys: keysInput,
           delimiter,
+          unlimited: unlimitedStock,
         }),
       })
 
@@ -150,6 +157,7 @@ export default function KeysPage() {
       const formData = new FormData()
       formData.append('product_id', selectedProduct)
       formData.append('file', file)
+      formData.append('unlimited', unlimitedStock ? 'true' : 'false')
 
       const response = await fetch('/api/admin/keys/upload-file', {
         method: 'POST',
@@ -231,7 +239,13 @@ export default function KeysPage() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-sm text-muted-foreground">Available</p>
-                <p className="text-2xl font-bold text-green-500">{selectedStock.available_stock}</p>
+                <p className="text-2xl font-bold text-green-500">
+                  {selectedStock.has_unlimited ? (
+                    <span className="text-blue-500">Unlimited</span>
+                  ) : (
+                    selectedStock.available_stock
+                  )}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Used</p>
@@ -284,6 +298,21 @@ export default function KeysPage() {
             rows={6}
           />
 
+          <div className="flex items-center space-x-2 mb-4">
+            <Checkbox
+              id="unlimited-stock"
+              checked={unlimitedStock}
+              onCheckedChange={(checked) => setUnlimitedStock(checked === true)}
+              disabled={!selectedProduct}
+            />
+            <Label
+              htmlFor="unlimited-stock"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Unlimited stock
+            </Label>
+          </div>
+
           <Button onClick={handleUploadKeys} disabled={uploading || !selectedProduct || !keysInput.trim()}>
             <Upload className="h-4 w-4 mr-2" />
             {uploading ? 'Uploading...' : 'Upload Keys'}
@@ -295,7 +324,7 @@ export default function KeysPage() {
           <Label htmlFor="file" className="mb-2 block">
             Or Upload TXT File
           </Label>
-          <div className="flex gap-4">
+          <div className="flex gap-4 mb-4">
             <Input
               id="file"
               type="file"
@@ -307,6 +336,20 @@ export default function KeysPage() {
               <FileText className="h-4 w-4 mr-2" />
               {uploading ? 'Uploading...' : 'Upload File'}
             </Button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="unlimited-stock-file"
+              checked={unlimitedStock}
+              onCheckedChange={(checked) => setUnlimitedStock(checked === true)}
+              disabled={!selectedProduct}
+            />
+            <Label
+              htmlFor="unlimited-stock-file"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Unlimited stock
+            </Label>
           </div>
         </div>
       </Card>
@@ -323,6 +366,7 @@ export default function KeysPage() {
               <tr className="border-b">
                 <th className="text-left p-2">Key</th>
                 <th className="text-left p-2">Status</th>
+                <th className="text-left p-2">Unlimited</th>
                 <th className="text-left p-2">Order ID</th>
                 <th className="text-left p-2">Customer Email</th>
                 <th className="text-left p-2">Used At</th>
@@ -344,6 +388,13 @@ export default function KeysPage() {
                         <CheckCircle2 className="h-4 w-4" />
                         Available
                       </span>
+                    )}
+                  </td>
+                  <td className="p-2 text-sm">
+                    {key.unlimited ? (
+                      <Badge variant="default" className="bg-blue-500">Unlimited</Badge>
+                    ) : (
+                      '-'
                     )}
                   </td>
                   <td className="p-2 text-sm">{key.order_id || '-'}</td>

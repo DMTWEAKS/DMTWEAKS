@@ -27,9 +27,10 @@ export async function GET(request: NextRequest) {
     const stockCounts = await sql`
       SELECT 
         product_id,
-        COUNT(*) FILTER (WHERE is_used = FALSE) as available_stock,
+        COUNT(*) FILTER (WHERE is_used = FALSE AND (unlimited = FALSE OR unlimited IS NULL)) as available_stock,
         COUNT(*) FILTER (WHERE is_used = TRUE) as used_stock,
-        COUNT(*) as total_stock
+        COUNT(*) as total_stock,
+        COUNT(*) FILTER (WHERE unlimited = TRUE) > 0 as has_unlimited
       FROM product_keys
       GROUP BY product_id
     `
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
   
   try {
     const body = await request.json()
-    let { product_id, keys, delimiter } = body
+    let { product_id, keys, delimiter, unlimited } = body
 
     if (!product_id || !keys) {
       return NextResponse.json(
@@ -118,11 +119,13 @@ export async function POST(request: NextRequest) {
     const insertedKeys = []
     const errors = []
 
+    const unlimitedValue = unlimited === true || unlimited === 'true'
+    
     for (const keyValue of keyArray) {
       try {
         const result = await sql`
-          INSERT INTO product_keys (product_id, key_value)
-          VALUES (${product_id}, ${keyValue})
+          INSERT INTO product_keys (product_id, key_value, unlimited)
+          VALUES (${product_id}, ${keyValue}, ${unlimitedValue})
           ON CONFLICT (key_value, product_id) DO NOTHING
           RETURNING id, key_value
         `

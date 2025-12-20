@@ -9,7 +9,7 @@ export interface Product {
   currency: string;
   image?: string;
   tags?: string[];
-  stock?: number;
+  stock?: number | null;
   created_at?: string;
   updated_at?: string;
 }

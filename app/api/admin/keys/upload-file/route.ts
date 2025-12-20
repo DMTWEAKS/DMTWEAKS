@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     let product_id = formData.get('product_id') as string
     const file = formData.get('file') as File
+    const unlimited = formData.get('unlimited') === 'true'
 
     if (!product_id || !file) {
       return NextResponse.json(
@@ -75,8 +76,8 @@ export async function POST(request: NextRequest) {
     for (const keyValue of keyArray) {
       try {
         const result = await sql`
-          INSERT INTO product_keys (product_id, key_value)
-          VALUES (${product_id}, ${keyValue})
+          INSERT INTO product_keys (product_id, key_value, unlimited)
+          VALUES (${product_id}, ${keyValue}, ${unlimited})
           ON CONFLICT (key_value, product_id) DO NOTHING
           RETURNING id, key_value
         `

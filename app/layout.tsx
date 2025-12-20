@@ -8,8 +8,8 @@ import SmoothScroll from '@/components/SmoothScroll'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'DM TWEAKS',
-  description: '100% Efficent TWEAKS', 
+  title: 'PayNow Store',
+  description: 'PayNow storefront and admin dashboard',
 }
 
 export default function RootLayout({

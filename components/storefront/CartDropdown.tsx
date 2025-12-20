@@ -18,7 +18,7 @@ export default function CartDropdown({ isOpen, onClose }: CartDropdownProps) {
   const { cart, removeFromCart, updateCartItem, customerToken, openCheckout } = useStorefront()
   const [updating, setUpdating] = useState<string | null>(null)
   const [checkingOut, setCheckingOut] = useState(false)
-  const [productStocks, setProductStocks] = useState<Record<string, number>>({})
+  const [productStocks, setProductStocks] = useState<Record<string, number | null>>({})
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function CartDropdown({ isOpen, onClose }: CartDropdownProps) {
     }
 
     const fetchStocks = async () => {
-      const stocks: Record<string, number> = {}
+      const stocks: Record<string, number | null> = {}
       await Promise.all(
         cart.items.map(async (item) => {
           try {
@@ -173,11 +173,13 @@ export default function CartDropdown({ isOpen, onClose }: CartDropdownProps) {
                         disabled={
                           updating === item.product.id ||
                           (productStocks[item.product.id] !== undefined &&
-                            item.quantity >= productStocks[item.product.id])
+                            productStocks[item.product.id] !== null &&
+                            item.quantity >= productStocks[item.product.id]!)
                         }
                         title={
                           productStocks[item.product.id] !== undefined &&
-                          item.quantity >= productStocks[item.product.id]
+                          productStocks[item.product.id] !== null &&
+                          item.quantity >= productStocks[item.product.id]!
                             ? `Only ${productStocks[item.product.id]} available in stock`
                             : 'Increase quantity'
                         }
