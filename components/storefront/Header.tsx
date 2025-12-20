@@ -83,7 +83,7 @@ function Header() {
       <header className="fixed left-1/2 -translate-x-1/2 w-1/2 z-50 bg-white/5 mt-5 rounded-2xl min-w-fit px-6 backdrop-blur-sm border border-border/50">
         <div className="flex h-16 items-center justify-between gap-8">
           <Link href="/" className="flex items-center space-x-2 z-10">
-            Dm Tweaks
+            DM TWEAKS
           </Link>
 
           <nav className="hidden lg:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
