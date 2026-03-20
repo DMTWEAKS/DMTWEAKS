@@ -82,7 +82,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
     try {
       const productResponse = await fetch(`/api/storefront/products/${productId}`)
       const productResult = await productResponse.json()
-      if (productResult.success && productResult.data.stock !== undefined) {
+      if (productResult.success && typeof productResult.data.stock === 'number') {
         const availableStock = productResult.data.stock
         const currentCartQuantity = cart?.items?.find(item => item.product.id === productId)?.quantity || 0
         const requestedQuantity = currentCartQuantity + quantity
@@ -152,7 +152,7 @@ export function StorefrontProvider({ children }: { children: ReactNode }) {
         cache: 'no-store',
       })
       const productResult = await productResponse.json()
-      if (productResult.success && productResult.data.stock !== undefined) {
+      if (productResult.success && typeof productResult.data.stock === 'number') {
         const availableStock = productResult.data.stock
         
         if (qty > availableStock) {

@@ -162,6 +162,21 @@ export default function ProductDetailPage() {
                   {product.currency} {product.price.toFixed(2)}
                 </div>
 
+                {product.stock !== undefined && (
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={product.stock === null || product.stock > 0 ? "default" : "destructive"}
+                      className="text-sm"
+                    >
+                      {product.stock === null
+                        ? "Unlimited"
+                        : product.stock > 0
+                        ? `${product.stock} in stock`
+                        : "Out of stock"}
+                    </Badge>
+                  </div>
+                )}
+
                 {product.description && (
                   <div 
                     className="prose prose-sm max-w-none text-muted-foreground"

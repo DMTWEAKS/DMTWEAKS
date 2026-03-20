@@ -73,6 +73,14 @@ export async function POST(request: NextRequest) {
     const insertedKeys = []
     const errors = []
 
+    // Delete any existing unlimited records for this product when uploading regular keys
+    if (!unlimited) {
+      await sql`
+        DELETE FROM product_keys 
+        WHERE product_id = ${product_id} AND unlimited = true
+      `
+    }
+
     for (const keyValue of keyArray) {
       try {
         const result = await sql`

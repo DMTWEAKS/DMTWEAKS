@@ -95,29 +95,26 @@ export async function POST(request: NextRequest) {
     const unlimitedValue = unlimited === true || unlimited === 'true'
     
     if (unlimitedValue) {
-      // For unlimited products, save the details as a single key
-      try {
-        const result = await sql`
-          INSERT INTO product_keys (product_id, key_value, unlimited)
-          VALUES (${product_id}, ${keys}, ${true})
-          ON CONFLICT (key_value, product_id) DO UPDATE SET
-            unlimited = EXCLUDED.unlimited
-          RETURNING id, key_value
-        `
-        const resultArray = Array.isArray(result) ? result : []
-        return NextResponse.json({
-          success: true,
-          data: {
-            inserted: resultArray.length,
-            total: 1,
-          },
-        })
-      } catch (error: any) {
-        return NextResponse.json(
-          { success: false, error: error.message || 'Failed to save details' },
-          { status: 500 }
-        )
-      }
+      // For unlimited products, first delete any existing unlimited records for this product
+      await sql`
+        DELETE FROM product_keys 
+        WHERE product_id = ${product_id} AND unlimited = true
+      `
+      
+      // Then insert the new unlimited record
+      const result = await sql`
+        INSERT INTO product_keys (product_id, key_value, unlimited)
+        VALUES (${product_id}, ${keys}, ${true})
+        RETURNING id, key_value
+      `
+      const resultArray = Array.isArray(result) ? result : []
+      return NextResponse.json({
+        success: true,
+        data: {
+          inserted: resultArray.length,
+          total: 1,
+        },
+      })
     }
 
     // For regular keys, parse them
@@ -154,6 +151,12 @@ export async function POST(request: NextRequest) {
 
     const insertedKeys = []
     const errors = []
+
+    // Delete any existing unlimited records for this product when switching to regular keys
+    await sql`
+      DELETE FROM product_keys 
+      WHERE product_id = ${product_id} AND unlimited = true
+    `
 
     for (const keyValue of keyArray) {
       try {

@@ -60,7 +60,6 @@ export default function KeysPage() {
       fetchKeys(selectedProduct)
     } else {
       fetchKeys()
-      setUnlimitedStock(false)
     }
   }, [selectedProduct])
 
@@ -92,8 +91,24 @@ export default function KeysPage() {
       const response = await fetch(url)
       const result = await response.json()
       if (result.success) {
-        setKeys(result.data.keys || [])
+        const fetchedKeys = result.data.keys || []
+        setKeys(fetchedKeys)
         setStock(result.data.stock || [])
+
+        // Check if this product has unlimited settings
+        if (productId) {
+          const unlimitedKey = fetchedKeys.find((key: Key) => key.unlimited === true)
+          if (unlimitedKey) {
+            setUnlimitedStock(true)
+            setKeysInput(unlimitedKey.key_value)
+          } else {
+            setUnlimitedStock(false)
+            setKeysInput('')
+          }
+        } else {
+          setUnlimitedStock(false)
+          setKeysInput('')
+        }
       }
     } catch (error) {
       toast.error('Failed to fetch keys')
@@ -269,7 +284,13 @@ export default function KeysPage() {
           <Checkbox
             id="unlimited"
             checked={unlimitedStock}
-            onCheckedChange={(checked) => setUnlimitedStock(checked === true)}
+            onCheckedChange={(checked) => {
+              const isChecked = checked === true
+              setUnlimitedStock(isChecked)
+              if (!isChecked) {
+                setKeysInput('')
+              }
+            }}
             disabled={!selectedProduct}
           />
           <Label
