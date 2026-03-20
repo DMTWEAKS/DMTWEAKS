@@ -52,7 +52,7 @@ npm install
      NEXT_PUBLIC_PAYNOW_API_BASE_URL=https://api.paynow.gg
      ```
 
-3. Run the development server:
+3. Run the development server:-
 ```bash
 npm run dev
 ```
