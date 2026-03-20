@@ -264,94 +264,105 @@ export default function KeysPage() {
       <Card className="p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Upload Keys</h2>
 
-        {/* Manual Input */}
-        <div className="mb-6">
-          <Label htmlFor="delimiter" className="mb-2 block">
-            Delimiter
-          </Label>
-          <Select value={delimiter} onValueChange={(value: 'comma' | 'newline' | 'space') => setDelimiter(value)}>
-            <SelectTrigger id="delimiter" className="w-full mb-4">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="comma">Comma (test1, test2)</SelectItem>
-              <SelectItem value="newline">New Line (one per line)</SelectItem>
-              <SelectItem value="space">Space (test1 test2)</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Label htmlFor="keys" className="mb-2 block">
-            Keys
-          </Label>
-          <Textarea
-            id="keys"
-            placeholder={
-              delimiter === 'comma'
-                ? 'test1, test2, test3'
-                : delimiter === 'newline'
-                ? 'test1\ntest2\ntest3'
-                : 'test1 test2 test3'
-            }
-            value={keysInput}
-            onChange={(e) => setKeysInput(e.target.value)}
-            className="mb-4 min-h-[120px] font-mono"
-            rows={6}
+        {/* Unlimited Checkbox */}
+        <div className="flex items-center space-x-2 mb-4">
+          <Checkbox
+            id="unlimited"
+            checked={unlimitedStock}
+            onCheckedChange={(checked) => setUnlimitedStock(checked === true)}
+            disabled={!selectedProduct}
           />
-
-          <div className="flex items-center space-x-2 mb-4">
-            <Checkbox
-              id="unlimited-stock"
-              checked={unlimitedStock}
-              onCheckedChange={(checked) => setUnlimitedStock(checked === true)}
-              disabled={!selectedProduct}
-            />
-            <Label
-              htmlFor="unlimited-stock"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-            >
-              Unlimited stock
-            </Label>
-          </div>
-
-          <Button onClick={handleUploadKeys} disabled={uploading || !selectedProduct || !keysInput.trim()}>
-            <Upload className="h-4 w-4 mr-2" />
-            {uploading ? 'Uploading...' : 'Upload Keys'}
-          </Button>
+          <Label
+            htmlFor="unlimited"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+          >
+            Unlimited
+          </Label>
         </div>
 
-        {/* File Upload */}
-        <div className="border-t pt-6">
-          <Label htmlFor="file" className="mb-2 block">
-            Or Upload TXT File
-          </Label>
-          <div className="flex gap-4 mb-4">
-            <Input
-              id="file"
-              type="file"
-              accept=".txt"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="flex-1"
+        {unlimitedStock ? (
+          /* Unlimited Product Details */
+          <div className="mb-6">
+            <Label htmlFor="details" className="mb-2 block">
+              Product Details
+            </Label>
+            <Textarea
+              id="details"
+              placeholder="Enter the details that will be sent to customers via email after purchase..."
+              value={keysInput}
+              onChange={(e) => setKeysInput(e.target.value)}
+              className="mb-4 min-h-[120px]"
+              rows={6}
             />
-            <Button onClick={handleFileUpload} disabled={uploading || !selectedProduct || !file}>
-              <FileText className="h-4 w-4 mr-2" />
-              {uploading ? 'Uploading...' : 'Upload File'}
+
+            <Button onClick={handleUploadKeys} disabled={uploading || !selectedProduct || !keysInput.trim()}>
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Saving...' : 'Save Details'}
             </Button>
           </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="unlimited-stock-file"
-              checked={unlimitedStock}
-              onCheckedChange={(checked) => setUnlimitedStock(checked === true)}
-              disabled={!selectedProduct}
-            />
-            <Label
-              htmlFor="unlimited-stock-file"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-            >
-              Unlimited stock
+        ) : (
+          /* Manual Input for Keys */
+          <div className="mb-6">
+            <Label htmlFor="delimiter" className="mb-2 block">
+              Delimiter
             </Label>
+            <Select value={delimiter} onValueChange={(value: 'comma' | 'newline' | 'space') => setDelimiter(value)}>
+              <SelectTrigger id="delimiter" className="w-full mb-4">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="comma">Comma (test1, test2)</SelectItem>
+                <SelectItem value="newline">New Line (one per line)</SelectItem>
+                <SelectItem value="space">Space (test1 test2)</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Label htmlFor="keys" className="mb-2 block">
+              Keys
+            </Label>
+            <Textarea
+              id="keys"
+              placeholder={
+                delimiter === 'comma'
+                  ? 'test1, test2, test3'
+                  : delimiter === 'newline'
+                  ? 'test1\ntest2\ntest3'
+                  : 'test1 test2 test3'
+              }
+              value={keysInput}
+              onChange={(e) => setKeysInput(e.target.value)}
+              className="mb-4 min-h-[120px] font-mono"
+              rows={6}
+            />
+
+            <Button onClick={handleUploadKeys} disabled={uploading || !selectedProduct || !keysInput.trim()}>
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Uploading...' : 'Upload Keys'}
+            </Button>
           </div>
-        </div>
+        )}
+
+        {/* File Upload - only show for non-unlimited */}
+        {!unlimitedStock && (
+          <div className="border-t pt-6">
+            <Label htmlFor="file" className="mb-2 block">
+              Or Upload TXT File
+            </Label>
+            <div className="flex gap-4 mb-4">
+              <Input
+                id="file"
+                type="file"
+                accept=".txt"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                className="flex-1"
+              />
+              <Button onClick={handleFileUpload} disabled={uploading || !selectedProduct || !file}>
+                <FileText className="h-4 w-4 mr-2" />
+                {uploading ? 'Uploading...' : 'Upload File'}
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Keys List */}

@@ -34,12 +34,18 @@ export async function initDatabase() {
         product_id VARCHAR(255) NOT NULL,
         key_value TEXT NOT NULL,
         is_used BOOLEAN DEFAULT FALSE,
+        unlimited BOOLEAN DEFAULT FALSE,
         order_id VARCHAR(255),
         customer_email VARCHAR(255),
         used_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(key_value, product_id)
       )
+    `
+
+    await sql`
+      ALTER TABLE product_keys 
+      ADD COLUMN IF NOT EXISTS unlimited BOOLEAN DEFAULT FALSE
     `
 
     await sql`

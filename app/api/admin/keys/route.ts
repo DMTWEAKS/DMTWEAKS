@@ -61,9 +61,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     let { product_id, keys, delimiter, unlimited } = body
 
-    if (!product_id || !keys) {
+    if (!product_id) {
       return NextResponse.json(
-        { success: false, error: 'Product ID and keys are required' },
+        { success: false, error: 'Product ID is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!keys || !keys.trim()) {
+      return NextResponse.json(
+        { success: false, error: 'Keys or details are required' },
         { status: 400 }
       )
     }
@@ -80,11 +87,40 @@ export async function POST(request: NextRequest) {
 
     if (keys.length > 100000) {
       return NextResponse.json(
-        { success: false, error: 'Keys input too large. Maximum 100KB allowed.' },
+        { success: false, error: 'Input too large. Maximum 100KB allowed.' },
         { status: 400 }
       )
     }
 
+    const unlimitedValue = unlimited === true || unlimited === 'true'
+    
+    if (unlimitedValue) {
+      // For unlimited products, save the details as a single key
+      try {
+        const result = await sql`
+          INSERT INTO product_keys (product_id, key_value, unlimited)
+          VALUES (${product_id}, ${keys}, ${true})
+          ON CONFLICT (key_value, product_id) DO UPDATE SET
+            unlimited = EXCLUDED.unlimited
+          RETURNING id, key_value
+        `
+        const resultArray = Array.isArray(result) ? result : []
+        return NextResponse.json({
+          success: true,
+          data: {
+            inserted: resultArray.length,
+            total: 1,
+          },
+        })
+      } catch (error: any) {
+        return NextResponse.json(
+          { success: false, error: error.message || 'Failed to save details' },
+          { status: 500 }
+        )
+      }
+    }
+
+    // For regular keys, parse them
     if (!['comma', 'newline', 'space'].includes(delimiter)) {
       return NextResponse.json(
         { success: false, error: 'Invalid delimiter' },
@@ -119,13 +155,11 @@ export async function POST(request: NextRequest) {
     const insertedKeys = []
     const errors = []
 
-    const unlimitedValue = unlimited === true || unlimited === 'true'
-    
     for (const keyValue of keyArray) {
       try {
         const result = await sql`
           INSERT INTO product_keys (product_id, key_value, unlimited)
-          VALUES (${product_id}, ${keyValue}, ${unlimitedValue})
+          VALUES (${product_id}, ${keyValue}, ${false})
           ON CONFLICT (key_value, product_id) DO NOTHING
           RETURNING id, key_value
         `
