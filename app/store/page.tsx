@@ -9,11 +9,11 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, X, Crown, Calendar, Zap, BookOpen, LayoutGrid } from 'lucide-react'
+import { Search, X, Crown, Calendar, Zap, BookOpen, LayoutGrid, Wrench } from 'lucide-react'
 
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'newest'
 
-type CategoryKey = 'all' | 'lifetime' | 'guides' | 'one-month' | 'one-time'
+type CategoryKey = 'all' | 'lifetime' | 'guides' | 'one-month' | 'one-time' | 'services'
 
 interface CategoryDef {
   key: CategoryKey
@@ -58,6 +58,13 @@ const CATEGORIES: CategoryDef[] = [
     shortTitle: '1 Time Use',
     icon: Zap,
     matchers: ['one time', 'one-time', 'single', 'single-use', '1 time', '1-time', 'onetime'],
+  },
+  {
+    key: 'services',
+    title: 'Services',
+    shortTitle: 'Services',
+    icon: Wrench,
+    matchers: ['service', 'services', 'support', 'consultation', 'remote'],
   },
 ]
 
@@ -154,6 +161,7 @@ export default function StorePage() {
       'guides': 0,
       'one-month': 0,
       'one-time': 0,
+      'services': 0,
     }
     for (const product of allProducts) {
       for (const cat of CATEGORIES) {
@@ -271,7 +279,7 @@ export default function StorePage() {
                 <div
                   role="tablist"
                   aria-label="Product categories"
-                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2"
+                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2"
                 >
                   {CATEGORIES.map((category) => {
                     const Icon = category.icon
