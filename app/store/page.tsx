@@ -36,35 +36,35 @@ const CATEGORIES: CategoryDef[] = [
     title: 'Lifetime',
     shortTitle: 'Lifetime',
     icon: Crown,
-    matchers: ['lifetime', 'unlimited', 'forever', 'permanent'],
+    matchers: ['lifetime'],
   },
   {
     key: 'guides',
     title: 'Guides',
     shortTitle: 'Guides',
     icon: BookOpen,
-    matchers: ['guide', 'tutorial', 'documentation', 'manual'],
+    matchers: ['guide'],
   },
   {
     key: 'one-month',
     title: 'One Month',
     shortTitle: '1 Month',
     icon: Calendar,
-    matchers: ['one month', 'one-month', 'monthly', '1 month', '1-month', '30 day', '30-day'],
+    matchers: ['one-month', 'one month', 'monthly', '1 month', '1-month'],
   },
   {
     key: 'one-time',
-    title: 'One Day Use',
-    shortTitle: '1 Day Use',
+    title: 'One Time Use',
+    shortTitle: '1 Time Use',
     icon: Zap,
-    matchers: ['one day', 'one-day', 'single', 'single-use', '1 time', '1-time', 'onetime'],
+    matchers: ['one-time', 'one time', '1 time', '1-time', 'onetime', 'single-use'],
   },
   {
     key: 'services',
     title: 'Services',
     shortTitle: 'Services',
     icon: Wrench,
-    matchers: ['service', 'services', 'support', 'consultation', 'remote'],
+    matchers: ['service'],
   },
 ]
 
@@ -93,13 +93,19 @@ function productMatchesCategory(product: Product, category: CategoryDef): boolea
   if (category.matchers.length === 0) return false
 
   const tagStrings = getProductTagStrings(product)
-  const haystack = [
-    ...tagStrings,
+  const tagHaystack = tagStrings.join(' ')
+  const fallbackHaystack = [
     product.name?.toLowerCase() || '',
     product.description?.toLowerCase() || '',
   ].join(' ')
 
-  return category.matchers.some((m) => haystack.includes(m))
+  // Tag matches take priority — they're explicit intent
+  if (tagStrings.length > 0) {
+    return category.matchers.some((m) => tagHaystack.includes(m))
+  }
+
+  // Only fall back to name/description if the product has no tags at all
+  return category.matchers.some((m) => fallbackHaystack.includes(m))
 }
 
 export default function StorePage() {
