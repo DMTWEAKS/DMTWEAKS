@@ -54,10 +54,10 @@ const CATEGORIES: CategoryDef[] = [
   },
   {
     key: 'one-time',
-    title: 'One Time Use',
-    shortTitle: '1 Time Use',
+    title: 'One Day Use',
+    shortTitle: '1 Day Use',
     icon: Zap,
-    matchers: ['one time', 'one-time', 'single', 'single-use', '1 time', '1-time', 'onetime'],
+    matchers: ['one day', 'one-day', 'single', 'single-use', '1 time', '1-time', 'onetime'],
   },
   {
     key: 'services',
