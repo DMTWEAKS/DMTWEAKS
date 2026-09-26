@@ -3,6 +3,8 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Product } from '@/lib/storefront'
@@ -66,19 +68,19 @@ export default function ProductsSection({ homepageContent, products, loading }: 
             variants={fadeInUp}
           >
             {homepageContent?.products?.sectionTitle ||
-              "Featured Optimization Software"}
+              "Popular Products"}
           </motion.h2>
           <motion.p
             className="text-lg text-muted-foreground"
             variants={fadeInUp}
           >
             {homepageContent?.products?.subtitle ||
-              "Choose from our range of powerful PC optimization tools"}
+              "Where most people start."}
           </motion.p>
         </motion.div>
         {loading ? (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {[...Array(8)].map((_, i) => (
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+            {[...Array(3)].map((_, i) => (
               <div key={i} className="flex flex-col space-y-4">
                 <Skeleton className="aspect-video w-full rounded-lg" />
                 <Skeleton className="h-6 w-3/4" />
@@ -100,7 +102,7 @@ export default function ProductsSection({ homepageContent, products, loading }: 
           </div>
         ) : (
           <motion.div
-            className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto"
             initial="hidden"
             animate={productsInView ? "visible" : "hidden"}
             variants={staggerContainer}
@@ -115,6 +117,11 @@ export default function ProductsSection({ homepageContent, products, loading }: 
             ))}
           </motion.div>
         )}
+        <div className="mt-10 flex justify-center">
+          <Button asChild variant="outline" size="lg" className="text-base px-8">
+            <Link href="/store">View all products</Link>
+          </Button>
+        </div>
       </div>
     </section>
   )

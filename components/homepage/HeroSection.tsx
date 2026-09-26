@@ -16,29 +16,13 @@ const fadeInDown = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
 }
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-}
-
-const staggerItem = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-}
-
 interface HeroSectionProps {
   homepageContent: any
 }
 
 export default function HeroSection({ homepageContent }: HeroSectionProps) {
   return (
-    <section className="min-h-screen relative overflow-hidden pt-20">
+    <section className="relative overflow-hidden pt-20">
       <div
         className="absolute inset-0 opacity-30"
         style={{
@@ -113,35 +97,6 @@ export default function HeroSection({ homepageContent }: HeroSectionProps) {
                 {homepageContent?.hero?.button2Text || "Browse Products"}
               </Link>
             </Button>
-          </motion.div>
-          <motion.div
-            className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-4 max-w-3xl mx-auto"
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-          >
-            {(homepageContent?.stats || [
-              { value: "10x", suffix: "", label: "Faster Speed" },
-              { value: "99%", suffix: "", label: "Satisfaction" },
-              { value: "1M+", suffix: "", label: "Users" },
-              { value: "24/7", suffix: "", label: "Support" },
-            ]).map(
-              (stat: any, index: number) => (
-                <motion.div
-                  key={index}
-                  className="text-center"
-                  variants={staggerItem}
-                >
-                  <div className="text-3xl font-bold text-primary">
-                    {stat.value}
-                    {stat.suffix}
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    {stat.label}
-                  </div>
-                </motion.div>
-              )
-            )}
           </motion.div>
         </div>
       </div>

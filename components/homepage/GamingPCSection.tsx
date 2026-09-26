@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Cpu, Gauge, HardDrive, Zap, Gamepad2, ArrowRight } from "lucide-react";
+import { Cpu, Gauge, Timer, Zap, Gamepad2, ArrowRight } from "lucide-react";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -98,9 +98,9 @@ export default function GamingPCSection({
             >
               {(
                 homepageContent?.gamingPC?.stats || [
-                  { label: "CPU Boost", value: "30%", color: "text-blue-500" },
-                  { label: "FPS Gain", value: "+45", color: "text-primary" },
-                  { label: "SSD Speed", value: "2x", color: "text-green-500" },
+                  { label: "Up to CPU Boost", value: "30%", color: "text-blue-500" },
+                  { label: "Up to FPS Gain", value: "+275", color: "text-primary" },
+                  { label: "Up to Lower Latency", value: "2x", color: "text-green-500" },
                   {
                     label: "Response",
                     value: "Instant",
@@ -111,7 +111,7 @@ export default function GamingPCSection({
                 const iconMap: Record<number, any> = {
                   0: Cpu,
                   1: Gauge,
-                  2: HardDrive,
+                  2: Timer,
                   3: Zap,
                 };
                 const Icon = iconMap[i] || Cpu;
