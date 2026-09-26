@@ -9,9 +9,7 @@ import HeroSection from "@/components/homepage/HeroSection";
 import ProductsSection from "@/components/homepage/ProductsSection";
 import GamingPCSection from "@/components/homepage/GamingPCSection";
 import PerformanceSection from "@/components/homepage/PerformanceSection";
-import FeaturesSection from "@/components/homepage/FeaturesSection";
-import BenefitsSection from "@/components/homepage/BenefitsSection";
-import TestimonialsSection from "@/components/homepage/TestimonialsSection";
+import CtaSection from "@/components/homepage/CtaSection";
 import { logger } from "@/lib/logger";
 
 export default function HomePage() {
@@ -89,13 +87,13 @@ export default function HomePage() {
       const featuredIds = homepageContent.products.featuredProductIds;
       if (featuredIds.length > 0) {
         setProducts(
-          allProducts.filter((p) => featuredIds.includes(p.id)).slice(0, 8)
+          allProducts.filter((p) => featuredIds.includes(p.id)).slice(0, 3)
         );
       } else {
-        setProducts(allProducts.slice(0, 8));
+        setProducts(allProducts.slice(0, 3));
       }
     } else if (allProducts.length > 0) {
-      setProducts(allProducts.slice(0, 8));
+      setProducts(allProducts.slice(0, 3));
     }
   }, [allProducts, homepageContent]);
 
@@ -156,12 +154,10 @@ export default function HomePage() {
         </div>
         
         <HeroSection homepageContent={homepageContent} />
-        <ProductsSection homepageContent={homepageContent} products={products} loading={loading} />
         <GamingPCSection homepageContent={homepageContent} />
         <PerformanceSection homepageContent={homepageContent} />
-        <FeaturesSection homepageContent={homepageContent} />
-        <BenefitsSection homepageContent={homepageContent} />
-        <TestimonialsSection homepageContent={homepageContent} />
+        <ProductsSection homepageContent={homepageContent} products={products} loading={loading} />
+        <CtaSection homepageContent={homepageContent} />
       </main>
       <Footer />
     </div>
